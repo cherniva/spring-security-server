@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Registration and Login System</title>
+    <link crossorigin="anonymous"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          rel="stylesheet">
+</head>
+<style>
+    .no-underline {
+        text-decoration: none;
+        color: aliceblue;
+    }
+</style>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Lock access control system</a>
+        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+                data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a aria-current="page" class="nav-link active" th:href="@{/register}">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a aria-current="page" class="nav-link active" th:href="@{/logout}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="container">
+        <div class="row">
+            <h1 th:text="${username} + ' list of users'"> Users passwords </h1>
+        </div>
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th><a class="no-underline" th:href="@{/sortByUser}">User</a></th>
+                <th>Password</th>
+                <th>Uid</th>
+                <th><a class="no-underline" th:href="@{/sortByInteraction}">Last interaction</a></th>
+                <th>Action</th>
+                <th>Details</th>
+            </tr>
+            <tr th:each="pin,iter: ${pins}">
+                <td th:text="${pin.getValue()}"></td>
+                <td th:text="${pin.getPassword()}"></td>
+                <td th:text="${pin.getUid()}"></td>
+                <td th:if="${pin.getTimestamps().isEmpty()}">
+
+                </td>
+                <td th:unless="${pin.getTimestamps().isEmpty()}">
+                    <div th:text="${pin.getTimestamps().get(pin.getTimestamps().size()-1).getTimestamp().substring(0, 17)}"></div>
+                </td>
+                <td th:if="${pin.getTimestamps().isEmpty()}">
+
+                </td>
+                <td th:unless="${pin.getTimestamps().isEmpty()}">
+                    <div th:switch="${pin.getTimestamps().get(pin.getTimestamps().size()-1).getTimestamp().substring(18, 19)}">
+                        <p th:case="1" th:text="open"></p>
+                        <p th:case="0" th:text="close"></p>
+                    </div>
+                </td>
+                <td>
+                    <form th:action="@{/timestamps}">
+                        <button class="btn btn-primary" name="redirect" type="submit" th:value="${iter.index}">show</button>
+                    </form>
+                </td>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="container">
+        <form method="post" role="form" th:action="@{/welcome}" th:object="${new_pin}">
+            <div class="form-group mb-3">
+                <label class="form-label">Add new user</label>
+                <input class="form-control"
+                       id="value"
+                       name="value"
+                       placeholder="Enter username"
+                       th:field="*{value}"
+                       type="text"
+                />
+                <p class="text-danger" th:errors="*{value}"
+                   th:if="${#fields.hasErrors('value')}">
+                </p>
+            </div>
+            <div class="form-group mb-3">
+<!--                <label class="form-label">Add new user</label>-->
+                <input class="form-control"
+                       id="password"
+                       name="password"
+                       placeholder="Enter password"
+                       th:field="*{password}"
+                       type="text"
+                />
+                <p class="text-danger" th:errors="*{password}"
+                   th:if="${#fields.hasErrors('password')}">
+                </p>
+            </div>
+
+            <div class="form-group mb-3">
+                <button class="btn btn-primary" name="action" type="submit" value="add">Add</button>
+                <button class="btn btn-primary" name="action" type="submit" value="update">Update</button>
+                <button class="btn btn-primary" name="action" type="submit" value="delete">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
